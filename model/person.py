@@ -7,6 +7,5 @@ class Person:
     self.salida = salida
     utils.dateValid(ingreso)
     utils.dateValid(salida)
-    if firstDateGreater(ingreso)
+    if utils.firstDateGreater(ingreso,salida):
       raise 'El egreso no puede ser anterior al ingreso'
-
