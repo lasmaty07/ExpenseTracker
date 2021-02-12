@@ -7,6 +7,7 @@ from flask import jsonify
 from flask import request
 from flask_pymongo import PyMongo
 from model.person import Person
+from model.expense import Expense
 
 basepath = Path()
 basedir = str(basepath.cwd())
@@ -59,6 +60,25 @@ def get_all_persons():
     output = person
   return output
 
+@app.route('/addExpense', methods=['POST'])
+def add_expense():
+  expenseTracker = mongo.db.expenses
+  expense = Expense(request.json['name'], request.json['desc'] ,request.json['costo'],request.json['fecha'],request.json['personas'])
+  expense_id = expenseTracker.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'personas': expense.personas})
+  new_expense = expenseTracker.find_one({'_id': expense_id })
+  output = {'expense_id':str(expense_id),'name':new_expense['name'],  'desc': new_expense['desc'], 'costo': new_expense['costo'], 'fecha': new_expense['fecha'], 'personas': new_expense['personas']}
+  return output
+ 
+
+@app.route('/getExpense/<name>', methods=['GET'])
+def get_one_expense(name):
+  expenseTracker = mongo.db.expenses
+  s = expenseTracker.find_one({'name' : name})
+  if s:
+    output = {'expense_id':str(s['_id']),'name' : s['name'], 'desc' : s['desc'], 'costo' : s['costo'] ,'fecha': s['fecha'], 'personas': s['personas']}
+  else:
+    abort(404, description="Expense not found")
+  return output
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
