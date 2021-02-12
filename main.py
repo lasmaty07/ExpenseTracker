@@ -30,7 +30,7 @@ mongo = PyMongo(app)
 def testapi():
   return {'result' : 'ok'}
 
-@app.route('/addPerson', methods=['POST'])
+@app.route('/person', methods=['POST'])
 def add_person():
   expenseTracker = mongo.db.persons
   person = Person(request.json['name'], request.json['ingreso'] ,request.json['salida'])
@@ -43,7 +43,17 @@ def add_person():
     abort(409, description="Duplicate person found")
   return output
 
-@app.route('/getPerson/<name>', methods=['GET'])
+@app.route('/person/<name>', methods=['GET'])
+def get_one_person(name):
+  expenseTracker = mongo.db.persons
+  s = expenseTracker.find_one({'name' : name})
+  if s:
+    expenseTracker.delete_one({'name' : name})
+  else:
+    abort(404, description="Person not found")
+  return output
+
+@app.route('/person/<name>', methods=['DELETE'])
 def get_one_person(name):
   expenseTracker = mongo.db.persons
   s = expenseTracker.find_one({'name' : name})
@@ -53,14 +63,7 @@ def get_one_person(name):
     abort(404, description="Person not found")
   return output
 
-@app.route('/getPersonAll/', methods=['GET'])
-def get_all_persons():
-  expenseTracker = mongo.db.persons
-  for person in expenseTracker.find():
-    output = person
-  return output
-
-@app.route('/addExpense', methods=['POST'])
+@app.route('/expense', methods=['POST'])
 def add_expense():
   expenseTracker = mongo.db
   expense = Expense(request.json['name'], request.json['desc'] ,request.json['costo'],request.json['fecha'],request.json['personas'],request.json['pagador'])
@@ -74,7 +77,7 @@ def add_expense():
   output = {'expense_id':str(expense_id),'name':new_expense['name'],  'desc': new_expense['desc'], 'costo': new_expense['costo'], 'fecha': new_expense['fecha'], 'personas': new_expense['personas']}
   return output
 
-@app.route('/getExpense/<name>', methods=['GET'])
+@app.route('/expense/<name>', methods=['GET'])
 def get_one_expense(name):
   expenseTracker = mongo.db.expenses
   s = expenseTracker.find_one({'name' : name})
@@ -83,6 +86,16 @@ def get_one_expense(name):
   else:
     abort(404, description="Expense not found")
   return output
+
+@app.route('/expense/<name>', methods=['DELETE'])
+def delete_one_expense(name):
+  expenseTracker = mongo.db.expenses
+  s = expenseTracker.find_one({'name' : name})
+  if s:
+    expenseTracker.delete_one({'name' : name})
+  else:
+    abort(404, description="Expense not found")
+  return ''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
