@@ -51,7 +51,7 @@ def get_one_person(name):
     expenseTracker.delete_one({'name' : name})
   else:
     abort(404, description="Person not found")
-  return output
+  return ''
 
 @app.route('/person/<name>', methods=['DELETE'])
 def get_one_person(name):
