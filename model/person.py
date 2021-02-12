@@ -10,4 +10,8 @@ class Person:
     self.name = name
     self.ingreso = ingreso
     self.salida = salida
- 
+    self.saldo = 0
+  
+  def addExpense(importe):
+    self.saldo += importe
+
