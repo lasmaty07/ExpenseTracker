@@ -54,7 +54,7 @@ def get_one_person(name):
   return ''
 
 @app.route('/person/<name>', methods=['DELETE'])
-def get_one_person(name):
+def delete_one_person(name):
   expenseTracker = mongo.db.persons
   s = expenseTracker.find_one({'name' : name})
   if s:
