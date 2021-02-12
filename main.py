@@ -62,13 +62,17 @@ def get_all_persons():
 
 @app.route('/addExpense', methods=['POST'])
 def add_expense():
-  expenseTracker = mongo.db.expenses
-  expense = Expense(request.json['name'], request.json['desc'] ,request.json['costo'],request.json['fecha'],request.json['personas'])
-  expense_id = expenseTracker.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'personas': expense.personas})
-  new_expense = expenseTracker.find_one({'_id': expense_id })
+  expenseTracker = mongo.db
+  expense = Expense(request.json['name'], request.json['desc'] ,request.json['costo'],request.json['fecha'],request.json['personas'],request.json['pagador'])
+  person = expenseTracker.persons.find_one({'name': expense.pagador })
+  expenseTracker.persons.update_one({'name': expense.pagador },{"$set": {'saldo':person['saldo']}})
+  expense_id = expenseTracker.expenses.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'personas': expense.personas})
+  saldoAux = int(person['saldo']) + int(expense.costo)
+  expenseTracker.persons.update_one({'name': expense.pagador },{"$set": {'saldo':saldoAux}})
+
+  new_expense = expenseTracker.expenses.find_one({'_id': expense_id })
   output = {'expense_id':str(expense_id),'name':new_expense['name'],  'desc': new_expense['desc'], 'costo': new_expense['costo'], 'fecha': new_expense['fecha'], 'personas': new_expense['personas']}
   return output
- 
 
 @app.route('/getExpense/<name>', methods=['GET'])
 def get_one_expense(name):
