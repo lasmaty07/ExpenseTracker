@@ -26,24 +26,24 @@ app.config["MONGO_URI"] = "mongodb://192.168.1.4:27017/expensetrackerdev"
 mongo = PyMongo(app)
 
 #All the routings in our app will be mentioned here.
-@app.route('/test', methods=['GET'])
+@app.route('/api/v1/test', methods=['GET'])
 def testapi():
   return {'result' : 'ok'}
 
-@app.route('/person', methods=['POST'])
+@app.route('/api/v1/person', methods=['POST'])
 def add_person():
   expenseTracker = mongo.db.persons
   person = Person(request.json['name'], request.json['ingreso'] ,request.json['salida'])
   s = expenseTracker.find_one({'name' : person.name})
   if not(s):
-    person_id = expenseTracker.insert({'name': person.name, 'ingreso': person.ingreso, 'salida': person.salida})
+    person_id = expenseTracker.insert({'name': person.name, 'ingreso': person.ingreso, 'salida': person.salida,'saldo':person.saldo})
     new_person = expenseTracker.find_one({'_id': person_id })
-    output = {'person_id':str(person_id),'name':new_person['name'], 'ingreso'  : new_person['ingreso'], 'salida' : new_person['salida']}
+    output = {'person_id':str(person_id),'name':new_person['name'], 'ingreso'  : new_person['ingreso'], 'salida' : new_person['salida'], 'saldo': new_person['saldo']}
   else:
     abort(409, description="Duplicate person found")
   return output
 
-@app.route('/person/<name>', methods=['GET'])
+@app.route('/api/v1/person/<name>', methods=['GET'])
 def get_one_person(name):
   expenseTracker = mongo.db.persons
   s = expenseTracker.find_one({'name' : name})
@@ -53,7 +53,7 @@ def get_one_person(name):
     abort(404, description="Person not found")
   return ''
 
-@app.route('/person/<name>', methods=['DELETE'])
+@app.route('/api/v1/person/<name>', methods=['DELETE'])
 def delete_one_person(name):
   expenseTracker = mongo.db.persons
   s = expenseTracker.find_one({'name' : name})
@@ -63,21 +63,24 @@ def delete_one_person(name):
     abort(404, description="Person not found")
   return output
 
-@app.route('/expense', methods=['POST'])
+@app.route('/api/v1/expense', methods=['POST'])
 def add_expense():
   expenseTracker = mongo.db
-  expense = Expense(request.json['name'], request.json['desc'] ,request.json['costo'],request.json['fecha'],request.json['personas'],request.json['pagador'])
+
+  print(request.json['fecha'])
+  expense = Expense(request.json['expense_name'], request.json['desc'] ,request.json['costo'],request.json['fecha'],request.json['personas'],request.json['pagador'])
+  
   person = expenseTracker.persons.find_one({'name': expense.pagador })
-  expenseTracker.persons.update_one({'name': expense.pagador },{"$set": {'saldo':person['saldo']}})
-  expense_id = expenseTracker.expenses.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'personas': expense.personas})
+  expense_id = expenseTracker.expenses.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'pagador': expense.pagador, 'personas': expense.personas})
   saldoAux = int(person['saldo']) + int(expense.costo)
+
   expenseTracker.persons.update_one({'name': expense.pagador },{"$set": {'saldo':saldoAux}})
 
   new_expense = expenseTracker.expenses.find_one({'_id': expense_id })
   output = {'expense_id':str(expense_id),'name':new_expense['name'],  'desc': new_expense['desc'], 'costo': new_expense['costo'], 'fecha': new_expense['fecha'], 'personas': new_expense['personas']}
   return output
 
-@app.route('/expense/<name>', methods=['GET'])
+@app.route('/api/v1/expense/<name>', methods=['GET'])
 def get_one_expense(name):
   expenseTracker = mongo.db.expenses
   s = expenseTracker.find_one({'name' : name})
@@ -87,7 +90,7 @@ def get_one_expense(name):
     abort(404, description="Expense not found")
   return output
 
-@app.route('/expense/<name>', methods=['DELETE'])
+@app.route('/api/v1/expense/<name>', methods=['DELETE'])
 def delete_one_expense(name):
   expenseTracker = mongo.db.expenses
   s = expenseTracker.find_one({'name' : name})
@@ -96,6 +99,21 @@ def delete_one_expense(name):
   else:
     abort(404, description="Expense not found")
   return ''
+
+@app.route('/api/v1/amount/<name>', methods=['GET'])
+def get_person_amounts(name):
+  expenseTracker = mongo.db
+  p = expenseTracker.persons.find_one({'name' : name})
+  owes = 0
+  for e in expenseTracker.expenses.find({'personas' : name}):
+    owes += e['costo']
+  
+  if p:
+    total_balance = p['saldo'] - owes
+    output = {'name': name, 'paid': p['saldo'], 'owes': owes, 'total_balance':total_balance }
+  else:
+    abort(404, description="Person not found")
+  return output
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

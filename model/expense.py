@@ -2,7 +2,7 @@ import utils
 
 class Expense:
   def __init__(self, name, desc, costo, fecha, personas,pagador):
-    utils.dateValid(fecha)
+    #utils.dateValid(fecha)
     if not(int(costo) > 0 ):
       raise Exception('Error: el costo del gasto debe ser mayor a cero')
 
