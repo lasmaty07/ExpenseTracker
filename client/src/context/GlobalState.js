@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // Initial state
 const initialState = {
-  transactions: [],
+  expenses: [],
   error: null,
   loading: true
 }
@@ -23,12 +23,12 @@ export const GlobalProvider = ({ children }) => {
 
       dispatch({
         type: 'GET_EXPENSES',
-        payload: res.data.data
+        payload: res.data
       });
     } catch (err) {
       dispatch({
-        type: 'TRANSACTION_ERROR',
-        payload: err.response.data.error
+        type: 'EXPENSE_ERROR',
+        payload: err.response.status
       });
     }
   }
@@ -43,8 +43,8 @@ export const GlobalProvider = ({ children }) => {
       });
     } catch (err) {
       dispatch({
-        type: 'TRANSACTION_ERROR',
-        payload: err.response.data.error
+        type: 'EXPENSE_ERROR',
+        payload: err.response.status
       });
     }
   }
@@ -61,23 +61,23 @@ export const GlobalProvider = ({ children }) => {
 
       dispatch({
         type: 'ADD_EXPENSE',
-        payload: res.data.data
+        payload: res.data
       });
     } catch (err) {
       dispatch({
-        type: 'TRANSACTION_ERROR',
-        payload: err.response.data.error
+        type: 'EXPENSE_ERROR',
+        payload: err.response.status
       });
     }
   }
 
   return (<GlobalContext.Provider value={{
-    transactions: state.transactions,
+    expenses: state.expenses,
     error: state.error,
     loading: state.loading,
-    getTransactions: getExpense,
-    deleteTransaction: deleteExpense,
-    addTransaction: addExpense
+    getExpense,
+    deleteExpense,
+    addExpense
   }}>
     {children}
   </GlobalContext.Provider>);

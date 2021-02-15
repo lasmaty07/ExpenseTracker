@@ -1,13 +1,14 @@
 import logging, json, datetime, time,os
 from pathlib import Path
 from utils import dateValid
-from dotenv import load_dotenv,dotenv_values
+from dotenv import load_dotenv
 from flask import Flask,abort
 from flask import jsonify
 from flask import request
 from flask_pymongo import PyMongo
 from model.person import Person
 from model.expense import Expense
+from bson.objectid import ObjectId
 
 basepath = Path()
 basedir = str(basepath.cwd())
@@ -21,7 +22,7 @@ logging.basicConfig(filename=LOG_FILENAME,level=LOG_LEVEL)
 
 app = Flask(__name__)
 app.config['ENV'] = 'Dev'
-app.config["MONGO_URI"] = "mongodb://192.168.1.4:27017/expensetrackerdev"
+app.config["MONGO_URI"] = os.getenv("DEV_MONGO_URL_CLUSTER")
 
 mongo = PyMongo(app)
 
@@ -66,39 +67,49 @@ def delete_one_person(name):
 @app.route('/api/v1/expense', methods=['POST'])
 def add_expense():
   expenseTracker = mongo.db
-
-  print(request.json['fecha'])
-  expense = Expense(request.json['expense_name'], request.json['desc'] ,request.json['costo'],request.json['fecha'],request.json['personas'],request.json['pagador'])
   
-  person = expenseTracker.persons.find_one({'name': expense.pagador })
-  expense_id = expenseTracker.expenses.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'pagador': expense.pagador, 'personas': expense.personas})
-  saldoAux = int(person['saldo']) + int(expense.costo)
+  expense = Expense(request.json['expense_name'], request.json['desc'] ,request.json['costo'],
+                    request.json['fecha'],request.json['personas'],request.json['pagadores'])
+  
+  for pagador in expense.pagadores:
+    print(pagador)
+    person = expenseTracker.persons.find_one({'name': pagador['name'] })  
+    saldoAux = int(person['saldo']) + int(expense.costo)
+    expenseTracker.persons.update_one({'name': pagador },{"$set": {'saldo':saldoAux}})
 
-  expenseTracker.persons.update_one({'name': expense.pagador },{"$set": {'saldo':saldoAux}})
-
+  expense_id = expenseTracker.expenses.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'pagadores': expense.pagadores, 'personas': expense.personas})
+  
   new_expense = expenseTracker.expenses.find_one({'_id': expense_id })
-  output = {'expense_id':str(expense_id),'name':new_expense['name'],  'desc': new_expense['desc'], 'costo': new_expense['costo'], 'fecha': new_expense['fecha'], 'personas': new_expense['personas']}
+  output = {'expense_id':str(expense_id),'name':new_expense['name'],  'desc': new_expense['desc'], 'costo': new_expense['costo'], 'fecha': new_expense['fecha'],'pagadores': new_expense['pagadores'], 'personas': new_expense['personas']}
   return output
 
-@app.route('/api/v1/expense/<name>', methods=['GET'])
-def get_one_expense(name):
+@app.route('/api/v1/expense/<id>', methods=['GET'])
+def get_one_expense(id):
   expenseTracker = mongo.db.expenses
-  s = expenseTracker.find_one({'name' : name})
+  s = expenseTracker.find_one({'_id' : ObjectId(id)})
   if s:
-    output = {'expense_id':str(s['_id']),'name' : s['name'], 'desc' : s['desc'], 'costo' : s['costo'] ,'fecha': s['fecha'], 'personas': s['personas']}
+    output = {'expense': {'expense_id':str(s['_id']),'name' : s['name'], 'desc' : s['desc'], 'costo' : s['costo'] ,'fecha': s['fecha'], 'personas': s['personas']}}
   else:
     abort(404, description="Expense not found")
   return output
 
-@app.route('/api/v1/expense/<name>', methods=['DELETE'])
-def delete_one_expense(name):
+@app.route('/api/v1/expense', methods=['GET'])
+def get_expenses():
   expenseTracker = mongo.db.expenses
-  s = expenseTracker.find_one({'name' : name})
-  if s:
-    expenseTracker.delete_one({'name' : name})
+  output = []
+  for s in expenseTracker.find():
+    output.append({'expense_id':str(s['_id']),'name' : s['name'], 'desc' : s['desc'], 'costo' : s['costo'] ,'fecha': s['fecha'], 'personas': s['personas']})
+  print(output)
+  return jsonify({ 'expenses' : output })
+
+@app.route('/api/v1/expense/<id>', methods=['DELETE'])
+def delete_one_expense(id):
+  expenseTracker = mongo.db.expenses
+  if expenseTracker.find_one_and_delete({'_id' : ObjectId(id)}):
+    output = ''
   else:
     abort(404, description="Expense not found")
-  return ''
+  return output
 
 @app.route('/api/v1/amount/<name>', methods=['GET'])
 def get_person_amounts(name):

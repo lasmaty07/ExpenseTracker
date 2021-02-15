@@ -4,19 +4,19 @@ export default (state, action) => {
       return {
         ...state,
         loading: false,
-        transactions: action.payload
+        expenses: action.payload
       }
     case 'DELETE_EXPENSE':
       return {
         ...state,
-        transactions: state.transactions.filter(transaction => transaction._id !== action.payload)
+        expenses: state.expenses.filter(expense => expense._id !== action.payload)
       }
     case 'ADD_EXPENSE':
       return {
         ...state,
-        transactions: [...state.transactions, action.payload]
+        expenses: [...state.expenses, action.payload]
       }
-    case 'TRANSACTION_ERROR':
+    case 'EXPENSE_ERROR':
       return {
         ...state,
         error: action.payload

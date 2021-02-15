@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react'
 import { GlobalContext } from '../context/GlobalState';
 
-export const AddTransaction = () => {
+export const AddExpense = () => {
   const [expense_name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [pagador, setPagador] = useState('');
@@ -9,7 +9,7 @@ export const AddTransaction = () => {
   const [fecha, setFecha] = useState('');
   const [costo, setCosto] = useState(0);
 
-  const { addTransaction } = useContext(GlobalContext);
+  const { addExpense } = useContext(GlobalContext);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -23,7 +23,7 @@ export const AddTransaction = () => {
       costo: +costo
     }
 
-    addTransaction(newExpense);
+    addExpense(newExpense);
   }
 
   return (

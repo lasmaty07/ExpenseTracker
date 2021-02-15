@@ -12,6 +12,6 @@ class Person:
     self.salida = salida
     self.saldo = 0
   
-  def addExpense(importe):
+  def addExpense(self,importe):
     self.saldo += importe
 
