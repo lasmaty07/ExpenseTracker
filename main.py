@@ -72,10 +72,9 @@ def add_expense():
                     request.json['fecha'],request.json['personas'],request.json['pagadores'])
   
   for pagador in expense.pagadores:
-    print(pagador)
     person = expenseTracker.persons.find_one({'name': pagador['name'] })  
     saldoAux = int(person['saldo']) + int(expense.costo)
-    expenseTracker.persons.update_one({'name': pagador },{"$set": {'saldo':saldoAux}})
+    expenseTracker.persons.update_one({'name': pagador['name'] },{"$set": {'saldo':saldoAux}})
 
   expense_id = expenseTracker.expenses.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'pagadores': expense.pagadores, 'personas': expense.personas})
   
@@ -99,7 +98,6 @@ def get_expenses():
   output = []
   for s in expenseTracker.find():
     output.append({'expense_id':str(s['_id']),'name' : s['name'], 'desc' : s['desc'], 'costo' : s['costo'] ,'fecha': s['fecha'], 'personas': s['personas']})
-  print(output)
   return jsonify({ 'expenses' : output })
 
 @app.route('/api/v1/expense/<id>', methods=['DELETE'])
@@ -117,14 +115,29 @@ def get_person_amounts(name):
   p = expenseTracker.persons.find_one({'name' : name})
   owes = 0
   for e in expenseTracker.expenses.find({'personas' : name}):
-    owes += e['costo']
-  
+    owes += e['costo']/len(e['personas'])
+    
   if p:
-    total_balance = p['saldo'] - owes
+    total_balance = owes - p['saldo'] 
     output = {'name': name, 'paid': p['saldo'], 'owes': owes, 'total_balance':total_balance }
   else:
     abort(404, description="Person not found")
   return output
+
+@app.route('/api/v1/amount', methods=['GET'])
+def get_amounts():
+  expenseTracker = mongo.db
+  output = []
+  for p in expenseTracker.persons.find():
+    owes = 0
+    for e in expenseTracker.expenses.find({'personas' : p['name']}):
+      owes += e['costo']/len(e['personas'])
+      
+    total_balance = owes - p['saldo'] 
+      
+    output.append({'name': p['name'],'owes': owes,'paid': p['saldo'],'total_balance':total_balance})
+  return jsonify({ 'amounts' : output })
+  
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
