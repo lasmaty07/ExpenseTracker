@@ -21,6 +21,17 @@ export default (state, action) => {
         ...state,
         error: action.payload
       }
+    case 'GET_AMOUNTS':
+        return {
+          ...state,
+          loading: false,
+          persons: action.payload
+        }
+    case 'AMOUNT_ERROR':
+      return {
+        ...state,
+        error: action.payload
+      }
     default:
       return state;
   }

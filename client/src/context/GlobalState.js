@@ -5,6 +5,7 @@ import axios from 'axios';
 // Initial state
 const initialState = {
   expenses: [],
+  persons: [],
   error: null,
   loading: true
 }
@@ -71,13 +72,31 @@ export const GlobalProvider = ({ children }) => {
     }
   }
 
+  async function getAmounts() {
+    try {
+      const res = await axios.get('/api/v1/amount');
+
+      dispatch({
+        type: 'GET_AMOUNTS',
+        payload: res.data.amounts
+      });
+    } catch (err) {
+      dispatch({
+        type: 'AMOUNT_ERROR',
+        payload: err.response.status
+      });
+    }
+  }
+
   return (<GlobalContext.Provider value={{
     expenses: state.expenses,
+    persons: state.persons,
     error: state.error,
     loading: state.loading,
     getExpense,
     deleteExpense,
-    addExpense
+    addExpense,
+    getAmounts
   }}>
     {children}
   </GlobalContext.Provider>);
