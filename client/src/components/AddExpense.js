@@ -40,14 +40,12 @@ export const AddExpense = () => {
     setInputList(list);
   };
    
-  // handle click event of the Remove button
   const handleRemoveClick = index => {
     const list = [...pagadores];
     list.splice(index, 1);
     setInputList(list);
   };
    
-  // handle click event of the Add button
   const handleAddClick = () => {
     setInputList([...pagadores, { name: "", importe: "" }]);
   };
@@ -68,19 +66,10 @@ export const AddExpense = () => {
             {pagadores.map((x, i) => {
               return (
                 <div className="box">
-                  <input
-                    name="name"
-                    type="text-short"
-                    value={x.name}
-                    onChange={e => handleInputChange(e, i)}
-                  />
-                  <input
-                    name="importe"
-                    type="number-short"
-                    value={x.importe}
-                    onChange={e => handleInputChange(e, i)}
-                  /> {pagadores.length !== 1 && <button className="delete-btn" onClick={() => handleRemoveClick(i)}>X</button>}
-                  <div className="btn-box">                    
+                  <input name="name" type="text-short" value={x.name} onChange={e => handleInputChange(e, i)} />
+                  <input name="importe" type="number-short" value={x.importe} onChange={e => handleInputChange(e, i)}/> 
+                    {pagadores.length !== 1 && <button className="delete-btn" onClick={() => handleRemoveClick(i)}>X</button>}
+                  <div className="btn-box">
                     {pagadores.length - 1 === i && <button className="add-btn" onClick={handleAddClick}>+</button>}
                   </div>
                 </div>
