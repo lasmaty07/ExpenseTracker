@@ -6,7 +6,6 @@ import axios from 'axios';
 const initialState = {
   expenses: [],
   persons: [],
-  pagadores: [],
   error: null,
   loading: true
 }
@@ -25,7 +24,7 @@ export const GlobalProvider = ({ children }) => {
 
       dispatch({
         type: 'GET_EXPENSES',
-        payload: res.data
+        payload: res.data.expenses
       });
     } catch (err) {
       dispatch({
@@ -92,7 +91,6 @@ export const GlobalProvider = ({ children }) => {
   return (<GlobalContext.Provider value={{
     expenses: state.expenses,
     persons: state.persons,
-    pagadores: state.pagadores,
     error: state.error,
     loading: state.loading,
     getExpense,

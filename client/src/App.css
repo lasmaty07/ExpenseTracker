@@ -88,14 +88,23 @@ input[type='number'] {
   width: 100%;
 }
 
-input[type='text-short'],
-input[type='number-short']{
+input[type='text-short']{
   border: 1px solid #dedede;
   border-radius: 2px;
   display: inline;
   font-size: 16px;
   padding: 10px;
   width: 50%;
+}
+
+
+input[type='number-short']{
+  border: 1px solid #dedede;
+  border-radius: 2px;
+  display: inline;
+  font-size: 16px;
+  padding: 10px;
+  width: 40%;
 }
 
 .btn {
@@ -149,14 +158,33 @@ input[type='number-short']{
   font-size: 20px;
   line-height: 20px;
   padding: 2px 5px;
-  position: absolute;
+  /* position: absolute;*/
   top: 50%;
-  left: 0;
-  /* transform: translate(-100%, -50%); */
+  /* left: 0; */
+  /* transform: translate(-100%, -10%);  */
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease; 
 }
 
 .list li:hover .delete-btn {
   opacity: 1;
+}
+
+.box:hover .delete-btn {
+  opacity: 1;
+}
+
+.add-btn {
+  cursor: pointer;
+  background-color: #50d175;
+  border: 0;
+  color: #fff;
+  font-size: 20px;
+  line-height: 20px;
+  padding: 2px 5px;
+  /* position: absolute;*/
+  top: 50%;
+  /* left: 0; */
+  /* transform: translate(-100%, -10%);  */
+  transition: opacity 0.3s ease; 
 }
