@@ -23,7 +23,14 @@ export const AddExpense = () => {
       costo: +costo
     }
 
-    addExpense(newExpense);
+    console.log(addExpense(newExpense));
+
+    setName('');
+    setDesc('');
+    setPersonas('');
+    setFecha('');
+    setCosto('');
+    setInputList([{ name: "", importe: "" }]);
   }
 
   const handleInputChange = (e, index) => {

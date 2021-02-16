@@ -48,6 +48,7 @@ export const GlobalProvider = ({ children }) => {
         payload: err.response.data.error
       });
     }
+    getAmounts();
   }
 
   async function addExpense(expense) {
@@ -70,6 +71,7 @@ export const GlobalProvider = ({ children }) => {
         payload: err.response.status
       });
     }
+    getAmounts();
   }
 
   async function getAmounts() {
