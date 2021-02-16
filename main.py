@@ -73,7 +73,7 @@ def add_expense():
   
   for pagador in expense.pagadores:
     person = expenseTracker.persons.find_one({'name': pagador['name'] })  
-    saldoAux = int(person['saldo']) + int(expense.costo)
+    saldoAux = int(person['saldo']) + int(pagador['importe'])
     expenseTracker.persons.update_one({'name': pagador['name'] },{"$set": {'saldo':saldoAux}})
 
   expense_id = expenseTracker.expenses.insert({'name': expense.name, 'desc': expense.desc, 'costo': expense.costo, 'fecha': expense.fecha, 'pagadores': expense.pagadores, 'personas': expense.personas})
@@ -102,8 +102,13 @@ def get_expenses():
 
 @app.route('/api/v1/expense/<id>', methods=['DELETE'])
 def delete_one_expense(id):
-  expenseTracker = mongo.db.expenses
-  if expenseTracker.find_one_and_delete({'_id' : ObjectId(id)}):
+  expenseTracker = mongo.db
+  e = expenseTracker.expenses.find_one_and_delete({'_id' : ObjectId(id)})
+  if e:
+    for p in e['pagadores']:
+      person = expenseTracker.persons.find_one({'name': p['name'] })  
+      saldoAux = int(person['saldo']) - int(p['importe'])
+      expenseTracker.persons.update_one({'name': p['name'] },{"$set": {'saldo':saldoAux}})
     output = ''
   else:
     abort(404, description="Expense not found")
