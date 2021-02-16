@@ -88,6 +88,16 @@ input[type='number'] {
   width: 100%;
 }
 
+input[type='text-short'],
+input[type='number-short']{
+  border: 1px solid #dedede;
+  border-radius: 2px;
+  display: inline;
+  font-size: 16px;
+  padding: 10px;
+  width: 50%;
+}
+
 .btn {
   cursor: pointer;
   background-color: #9c88ff;
@@ -142,7 +152,7 @@ input[type='number'] {
   position: absolute;
   top: 50%;
   left: 0;
-  transform: translate(-100%, -50%);
+  /* transform: translate(-100%, -50%); */
   opacity: 0;
   transition: opacity 0.3s ease;
 }

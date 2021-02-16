@@ -1,10 +1,11 @@
 import React, {useState, useContext} from 'react'
 import { GlobalContext } from '../context/GlobalState';
+import {Pagadores} from './PagadoresLista';
 
 export const AddExpense = () => {
   const [expense_name, setName] = useState('');
   const [desc, setDesc] = useState('');
-  const [pagador, setPagador] = useState('');
+  const [pagadores, setPagadores] = useState('');
   const [personas, setPersonas] = useState('');
   const [fecha, setFecha] = useState('');
   const [costo, setCosto] = useState(0);
@@ -17,7 +18,7 @@ export const AddExpense = () => {
     const newExpense = {
       expense_name,
       desc,
-      pagador,
+      pagadores: [],
       personas,
       fecha,
       costo: +costo
@@ -35,9 +36,9 @@ export const AddExpense = () => {
           <input type="text" value={expense_name} onChange={(e) => setName(e.target.value)} placeholder="Nombre gasto" />
           <input type="text" value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Descripción gasto" />       
           <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} placeholder="Fecha" />       
-          <input type="text" value={pagador} onChange={(e) => setPagador(e.target.value)} placeholder="Pagado por" />
           <input type="number" value={costo} onChange={(e) => setCosto(e.target.value)} placeholder="Monto" />
           <input type="text" value={personas} onChange={(e) => setPersonas(e.target.value.split(','))} placeholder="Personas (separado por coma)" />
+          <Pagadores />         
         </div>
         <button className="btn">Agregar gasto</button>
       </form>
