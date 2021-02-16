@@ -13,7 +13,7 @@ export const ExpenseList = () => {
 
   return (
     <>
-      <h3>History</h3>
+      <h3>Gastos</h3>
       <ul className="list">
         {expenses.map(expense => (<Expense key={expense._id} expense={expense} />))}
       </ul>

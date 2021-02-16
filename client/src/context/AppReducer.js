@@ -9,7 +9,7 @@ export default (state, action) => {
     case 'DELETE_EXPENSE':
       return {
         ...state,
-        expenses: state.expenses.filter(expense => expense._id !== action.payload)
+        expenses: state.expenses.filter(expense => expense.expense_id !== action.payload)
       }
     case 'ADD_EXPENSE':
       return {
