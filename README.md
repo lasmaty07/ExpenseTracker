@@ -12,13 +12,14 @@ cd client
 npm install
 ```
 
-start backend
+start backend on main directory
 
 ```cmd
 python main.py
 ```
 
-start frontend
+start frontend on different terminal
 ```cmd
+cd client
 npm start
 ```
