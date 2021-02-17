@@ -70,7 +70,9 @@ export const GlobalProvider = ({ children }) => {
         type: 'EXPENSE_ERROR',
         payload: err.response.status
       });
+      console.log(err.response.status);
     }
+    
     getAmounts();
   }
 

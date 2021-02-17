@@ -1,5 +1,7 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext, useEffect} from 'react'
 import { GlobalContext } from '../context/GlobalState';
+import { toast } from 'react-toastify';
+
 
 export const AddExpense = () => {
   const [expense_name, setName] = useState('');
@@ -7,13 +9,55 @@ export const AddExpense = () => {
   const [personas, setPersonas] = useState('');
   const [fecha, setFecha] = useState('');
   const [costo, setCosto] = useState(0);
-  const [pagadores, setInputList] = useState([{ name: "", importe: "" }]);
+  const [pagadores, setPagadores] = useState([{ name: "", importe: "" }]);
+  //const [errors, setErrors] = useState([{ expense_name: "", desc: "", personas: "", fecha: "", costo: "", pagadores: "" }]);
+  const [errors, setErrors] = useState('');
 
-  const { addExpense } = useContext(GlobalContext);
+  const { addExpense, error} = useContext(GlobalContext);
 
-  const onSubmit = e => {
+  const validateForm = errors => {
+    let valid = true;
+    Object.values(errors).forEach(val => val.length > 0 && (valid = false));
+    return valid;
+  };
+  
+  const handleChange = (e) => {
+    e.preventDefault();
+    const { name, value } = e.target;
+
+    switch (name) {
+      case 'expense_name': 
+        if (value.length == 0) {setErrors([{ expense_name: "El nombre del gasto no puede ser vacio" }]);}
+        setName(value)
+        break;    
+      case 'desc': 
+        if (value.length == 0) {setErrors([{ desc: "El nombre del gasto no puede ser vacio" }]); }
+        setDesc(value)
+        break;
+      case 'personas': 
+        if (value.length == 0) {setErrors([{ personas: "El nombre del gasto no puede ser vacio" }]); }
+        setPersonas(value)
+        break;
+      case 'fecha': 
+        if (value.length == 0) {setErrors([{ fecha: "El nombre del gasto no puede ser vacio" }]); }
+        setFecha(value)
+        break;
+      case 'costo': 
+        if (value <= 0 ) {setErrors([{ costo: "El nombre del gasto no puede ser vacio" }]); }
+        setCosto(value)
+        break;
+      case 'pagadores': 
+        if (value.length == 0 ) {setErrors([{ pagadores: "El nombre del gasto no puede ser vacio" }]); }
+        break;
+      default:
+        break;
+    }
+  }
+ 
+  function onSubmit (e) {
     e.preventDefault();
 
+    
     const newExpense = {
       expense_name,
       desc,
@@ -23,31 +67,38 @@ export const AddExpense = () => {
       costo: +costo
     }
 
-    console.log(addExpense(newExpense));
+    if(validateForm(this.state.errors)) {
+      addExpense(newExpense);
 
-    setName('');
-    setDesc('');
-    setPersonas('');
-    setFecha('');
-    setCosto('');
-    setInputList([{ name: "", importe: "" }]);
+    
+      console.log('Error: ' + error);
+      setName('');
+      setDesc('');
+      setPersonas('');
+      setFecha('');
+      setCosto('');
+      setPagadores([{ name: "", importe: "" }]);
+    } else  {
+      console.error('Invalid Form')
+    }
   }
+
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
     const list = [...pagadores];
     list[index][name] = value;
-    setInputList(list);
+    setPagadores(list);
   };
    
   const handleRemoveClick = index => {
     const list = [...pagadores];
     list.splice(index, 1);
-    setInputList(list);
+    setPagadores(list);
   };
    
   const handleAddClick = () => {
-    setInputList([...pagadores, { name: "", importe: "" }]);
+    setPagadores([...pagadores, { name: "", importe: "" }]);
   };
 
   return (
@@ -56,11 +107,12 @@ export const AddExpense = () => {
       <form onSubmit={onSubmit}>
         <div className="form-control">
           <label htmlFor="amount">Gasto</label>
-          <input type="text" value={expense_name} onChange={(e) => setName(e.target.value)} placeholder="Nombre gasto" />
-          <input type="text" value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Descripción gasto" />       
-          <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} placeholder="Fecha" />       
-          <input type="number" value={costo} onChange={(e) => setCosto(e.target.value)} placeholder="Monto" />
-          <input type="text" value={personas} onChange={(e) => setPersonas(e.target.value.split(','))} placeholder="Personas (separado por coma)" />
+          <input type="text" name='expense_name' value={expense_name} onChange={(e) => handleChange(e)} placeholder="Nombre gasto" />   
+          {errors.length > 0 && <span className='error'>{errors.length}</span>}
+          <input type="text" name='desc' value={desc} onChange={(e) => handleChange(e)} placeholder="Descripción gasto" />     
+          <input type="date" name='fecha' value={fecha} onChange={(e) => handleChange(e)} placeholder="Fecha" />
+          <input type="number" name='costo' value={costo} onChange={(e) => handleChange(e)} placeholder="Monto" />
+          <input type="text" name='personas' value={personas} onChange={(e) => handleChange(e)} placeholder="Personas (separado por coma)" />
           <label htmlFor="">Pagaron</label>
           <div>
             {pagadores.map((x, i) => {
@@ -76,7 +128,7 @@ export const AddExpense = () => {
               );
             })}
           </div>       
-        </div>
+        </div>        
         <button className="btn">Agregar gasto</button>
       </form>
     </>
