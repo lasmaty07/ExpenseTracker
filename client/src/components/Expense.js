@@ -8,7 +8,7 @@ export const Expense = ({ expense }) => {
   // const sign = expense.costo < 0 ? '-' : '+';
 
   return (
-    <li className={expense.amount < 0 ? 'minus' : 'plus'}>
+    <li>
       {expense.name} 
       {expense.desc}
       {expense.fecha}
