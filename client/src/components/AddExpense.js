@@ -120,7 +120,7 @@ export const AddExpense = () => {
                 <div className="box">
                   <input name="name" type="text-short" value={x.name} onChange={e => handleInputChange(e, i)} />
                   <input name="importe" type="number-short" value={x.importe} onChange={e => handleInputChange(e, i)}/> 
-                    {pagadores.length !== 1 && <button className="delete-btn" onClick={() => handleRemoveClick(i)}>X</button>}
+                    {pagadores.length !== 1 && <button className="delete-btn-pag" onClick={() => handleRemoveClick(i)}>X</button>}
                   <div className="btn-box">
                     {pagadores.length - 1 === i && <button className="add-btn" onClick={handleAddClick}>+</button>}
                   </div>

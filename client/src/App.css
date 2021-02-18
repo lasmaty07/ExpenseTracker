@@ -158,10 +158,23 @@ input[type='number-short']{
   font-size: 20px;
   line-height: 20px;
   padding: 2px 5px;
-  /* position: absolute;*/
+  position: absolute;
   top: 50%;
-  /* left: 0; */
-  /* transform: translate(-100%, -10%);  */
+  left: 0;
+  transform: translate(-100%, -50%);  
+  opacity: 0;
+  transition: opacity 0.3s ease; 
+}
+
+.delete-btn-pag {
+  cursor: pointer;
+  background-color: #e74c3c;
+  border: 0;
+  color: #fff;
+  font-size: 20px;
+  line-height: 20px;
+  padding: 2px 5px;
+  top: 50%;
   opacity: 0;
   transition: opacity 0.3s ease; 
 }
@@ -176,15 +189,14 @@ input[type='number-short']{
 
 .add-btn {
   cursor: pointer;
-  background-color: #50d175;
+  background-color: #37da65;
   border: 0;
   color: #fff;
   font-size: 20px;
   line-height: 20px;
   padding: 2px 5px;
-  /* position: absolute;*/
+  margin-top: 2px;
   top: 50%;
-  /* left: 0; */
-  /* transform: translate(-100%, -10%);  */
   transition: opacity 0.3s ease; 
 }
+

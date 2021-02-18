@@ -8,12 +8,8 @@ export const Expense = ({ expense }) => {
   // const sign = expense.costo < 0 ? '-' : '+';
 
   return (
-    <li>
-      {expense.name} 
-      {expense.desc}
-      {expense.fecha}
-      ${numberWithCommas(Math.abs(expense.costo))}
-      {expense.personas.join()}
+    <li >
+      {expense.name}<span>${numberWithCommas(Math.abs(expense.costo))}</span>
       <button onClick={() => deleteExpense(expense.expense_id)} className="delete-btn">x</button>
     </li>
   )
