@@ -22,7 +22,7 @@ logging.basicConfig(filename=LOG_FILENAME,level=LOG_LEVEL)
 
 app = Flask(__name__)
 app.config['ENV'] = 'Dev'
-app.config["MONGO_URI"] = os.getenv("DEV_MONGO_URL_CLUSTER")
+app.config["MONGO_URI"] = os.getenv("DEV_MONGO_URL_LOCAL")
 
 mongo = PyMongo(app)
 
@@ -45,16 +45,6 @@ def add_person():
   return output
 
 @app.route('/api/v1/person/<name>', methods=['GET'])
-def get_one_person(name):
-  expenseTracker = mongo.db.persons
-  s = expenseTracker.find_one({'name' : name})
-  if s:
-    expenseTracker.delete_one({'name' : name})
-  else:
-    abort(404, description="Person not found")
-  return ''
-
-@app.route('/api/v1/person/<name>', methods=['DELETE'])
 def delete_one_person(name):
   expenseTracker = mongo.db.persons
   s = expenseTracker.find_one({'name' : name})
@@ -63,6 +53,16 @@ def delete_one_person(name):
   else:
     abort(404, description="Person not found")
   return output
+
+@app.route('/api/v1/person/<name>', methods=['DELETE'])
+def get_one_person(name):
+  expenseTracker = mongo.db.persons
+  s = expenseTracker.find_one({'name' : name})
+  if s:
+    expenseTracker.delete_one({'name' : name})
+  else:
+    abort(404, description="Person not found")
+  return ''
 
 @app.route('/api/v1/expense', methods=['POST'])
 def add_expense():
