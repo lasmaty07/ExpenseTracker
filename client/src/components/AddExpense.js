@@ -36,7 +36,7 @@ export const AddExpense = () => {
         break;
       case 'personas': 
         if (value.length == 0) {setErrors([{ personas: "El nombre del gasto no puede ser vacio" }]); }
-        setPersonas(value)
+        setPersonas(value.split(','))
         break;
       case 'fecha': 
         if (value.length == 0) {setErrors([{ fecha: "El nombre del gasto no puede ser vacio" }]); }
@@ -67,7 +67,7 @@ export const AddExpense = () => {
       costo: +costo
     }
 
-    if(validateForm(this.state.errors)) {
+    if(validateForm(errors)) {
       addExpense(newExpense);
 
     
