@@ -49,7 +49,7 @@ def delete_one_person(name):
   expenseTracker = mongo.db.persons
   s = expenseTracker.find_one({'name' : name})
   if s:
-    output = {'person_id':str(s['_id']),'name' : s['name'], 'ingreso' : s['ingreso'], 'salida' : s['salida'] }
+    output = {'person_id':str(s['_id']),'name' : s['name'], 'ingreso' : s['ingreso'], 'salida' : s['salida'], 'saldo':s['saldo'] }
   else:
     abort(404, description="Person not found")
   return output
