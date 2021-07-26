@@ -10,6 +10,9 @@ class Expense:
     if not(pagadores):
       raise Exception('Error: El gasto no puede no tener quien pagó')
 
+    if not(personas):
+      raise Exception('Error: El gasto no puedeno aplicar a nadie')      
+
     sumatoria = 0  
     listaPagadores = list(pagadores) 
     for pagador in listaPagadores:

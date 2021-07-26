@@ -2,6 +2,7 @@ from datetime import date
 import unittest
 
 from model.person import *
+from model.expense import *
 
 class TestPerson(unittest.TestCase):
 
@@ -30,6 +31,69 @@ class TestPerson(unittest.TestCase):
 		p.addExpense(10)
 		self.assertEqual(p.saldo,40)
 
+class TestExpense(unittest.TestCase):
+
+	def test_expense_creation(self):
+		name = 'Cena'
+		desc = 'cena'
+		costo = 500
+		fecha = '25/07/2021'
+		personas = {'matt'}
+		pagadores = [{'name':'nico','importe':100},{'name':'matt','importe':400}]
+		e = Expense(name,desc,costo,fecha,personas,pagadores)
+		self.assertIsInstance(e,Expense)
+
+	def test_expense_error_sum(self):
+		name = 'Cena'
+		desc = 'cena'
+		costo = 300
+		fecha = '25/07/2021'
+		personas = {'matt'}
+		pagadores = [{'name':'nico','importe':100},{'name':'matt','importe':400}]
+		
+		with self.assertRaises(Exception) as context:
+			Expense(name,desc,costo,fecha,personas,pagadores)
+		
+		self.assertTrue('Error: la sumatoria de los gatos individuales debe sumar el total' in str(context.exception))
+
+	def test_expense_error_costo(self):
+		name = 'Cena'
+		desc = 'cena'
+		costo = 0
+		fecha = '25/07/2021'
+		personas = {'matt'}
+		pagadores = [{'name':'nico','importe':100},{'name':'matt','importe':400}]
+		
+		with self.assertRaises(Exception) as context:
+			Expense(name,desc,costo,fecha,personas,pagadores)
+		
+		self.assertTrue('Error: el costo del gasto debe ser mayor a cero' in str(context.exception))
+
+	def test_expense_error_pagador(self):
+		name = 'Cena'
+		desc = 'cena'
+		costo = 500
+		fecha = '25/07/2021'
+		personas = {'Matt'}
+		pagadores = []
+		
+		with self.assertRaises(Exception) as context:
+			Expense(name,desc,costo,fecha,personas,pagadores)
+		
+		self.assertTrue('Error: El gasto no puede no tener quien pagó' in str(context.exception))
+
+	def test_expense_error_persona(self):
+		name = 'Cena'
+		desc = 'cena'
+		costo = 500
+		fecha = '25/07/2021'
+		personas = {}
+		pagadores = [{'name':'nico','importe':100},{'name':'matt','importe':400}]
+				
+		with self.assertRaises(Exception) as context:
+			Expense(name,desc,costo,fecha,personas,pagadores)
+		
+		self.assertTrue('Error: El gasto no puedeno aplicar a nadie' in str(context.exception))		
 
 if __name__ == '__main__':
 	unittest.main()
